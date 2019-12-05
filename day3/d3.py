@@ -5,58 +5,43 @@ t2 = file[1].split(',')
 
 vertical = []
 horizontal = []
-segment = []
 junctions = []
 
 def intersect(p1, p2, mode):
     global junctions
-    if mode == 'U':    
+    if mode == 'U' or mode == 'D':    
         for k in horizontal:
             if(p1[0] >= k[0][0] and p1[0] <= k[1][0] and p1[1] <= k[0][1] and p2[1] >= k[0][1]):
                 junctions.append([p1[0], k[0][1]]) 
-    if mode == 'D':
-        for k in horizontal:
-            if(p1[0] >= k[0][0] and p1[0] <= k[1][0] and p1[1] <= k[0][1] and p2[1] >= k[0][1]):
-                junctions.append([p1[0], k[0][1]]) 
-    if mode == 'R':
-        for k in vertical:
-            if(p1[1] >= k[0][1] and p1[1] <= k[1][1] and p1[0] <= k[0][0] and p2[0] >= k[0][0]):
-                junctions.append([p1[0], k[0][1]]) 
-    if mode == 'L':
+    if mode == 'R' or mode == 'L':
         for k in vertical:
             if(p1[1] >= k[0][1] and p1[1] <= k[1][1] and p1[0] <= k[0][0] and p2[0] >= k[0][0]):
                 junctions.append([p1[0], k[0][1]]) 
 
 def track1(x=0, y=0):
     for i in t1:
-        segment = []
-        if i[0] == 'R':
-            horizontal.append(([x,y], [(x + int(i[1:])), y]))
-            x = x + int(i[1:])
-        if i[0] == 'L':
-            horizontal.append(([(x - int(i[1:])), y],[x,y]))
-            x = x - int(i[1:])
-        if i[0] == 'U':
-            vertical.append(([x,y], [x, (y + int(i[1:]))]))
-            y = y + int(i[1:])
-        if i[0] == 'D':
-            vertical.append(([x, (y - int(i[1:]))], [x,y]))
-            y = y - int(i[1:])   
+        point = track(i,x,y)
+        if point[2] == 'R': horizontal.append(([x,y], [point[0], point[1]]))
+        if point[2] == 'L': horizontal.append(([point[0], point[1]], [x,y]))
+        if point[2] == 'U': vertical.append(([x,y], [point[0], point[1]]))
+        if point[2] == 'D': vertical.append(([point[0], point[1]], [x,y]))    
+        x, y = point[0], point[1]
 
 def track2(x=0, y=0):
     for j in t2:
-        if j[0] == 'R':
-            intersect(([x, y]), ([(x + int(j[1:])), y]), 'R')
-            x = x + int(j[1:])
-        if j[0] == 'L':
-            intersect(([(x - int(j[1:])), y]), ([x, y]), 'L')
-            x = x - int(j[1:])
-        if j[0] == 'U':
-            intersect(([x, y]), ([x, (y + int(j[1:]))]), 'U')
-            y = y + int(j[1:])
-        if j[0] == 'D':
-            intersect(([x, (y - int(j[1:]))]), ([x, y]), 'D')
-            y = y - int(j[1:])
+        point = track(j,x,y)
+        if point[2] == 'R': intersect([x,y], ([point[0], point[1]]), 'R')
+        if point[2] == 'L': intersect(([point[0], point[1]]), [x,y], 'L')
+        if point[2] == 'U': intersect([x,y], ([point[0], point[1]]), 'U')
+        if point[2] == 'D': intersect(([point[0], point[1]]), [x,y], 'D')    
+        x, y = point[0], point[1]
+
+def track(value, x, y):
+    if value[0] == 'R': x = x + int(value[1:])
+    if value[0] == 'L': x = x - int(value[1:])
+    if value[0] == 'U': y = y + int(value[1:])
+    if value[0] == 'D': y = y - int(value[1:])  
+    return [x,y,value[0]]
 
 def distance():
     result = abs(junctions[0][0]) + abs(junctions[0][1])
