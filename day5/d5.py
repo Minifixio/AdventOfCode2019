@@ -1,4 +1,4 @@
-def main(system_id = 1, i = 0, code = 0, val = map(int, open('input.txt', 'r').read().split(','))):
+def main(system_id = 1, i = 0, code = 0, val = list(map(int, open('input.txt', 'r').read().split(',')))):
     while code != 99:
         nxt = val[(i+1)]
         code = val[i]
@@ -9,12 +9,12 @@ def main(system_id = 1, i = 0, code = 0, val = map(int, open('input.txt', 'r').r
             i = i + 2
             continue
 
-        if opcode == 4:
+        elif opcode == 4:
             print('Output: ' + str(val[nxt]))
             i = i + 2
             continue
 
-        if code == 99:
+        elif code == 99:
             break
 
         else:
@@ -25,9 +25,25 @@ def main(system_id = 1, i = 0, code = 0, val = map(int, open('input.txt', 'r').r
             
             if opcode == 1:
                 val[val[(i+3)]] = (p1 + p2) 
-            if opcode == 2:
+                i = i + 4
+            elif opcode == 2:
                 val[val[(i+3)]] = (p1 * p2) 
+                i = i + 4
+            elif opcode == 5:
+                if p1 != 0:
+                    i = p2
+                else: i = i + 3
+            elif opcode == 6:
+                if p1 == 0:
+                    i = p2
+                else: i = i + 3
+            elif opcode == 7:
+                if p1 < p2: val[val[(i+3)]] = 1
+                else: val[val[(i+3)]] = 0
+                i = i + 4
+            if opcode == 8:
+                if p1 == p2: val[val[(i+3)]] = 1
+                else: val[val[(i+3)]] = 0
+                i = i + 4
 
-            i = i + 4
-
-main()
+main(5)
